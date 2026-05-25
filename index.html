@@ -280,5 +280,43 @@
 <script>
   document.getElementById('y').textContent = new Date().getFullYear();
 </script>
+  <script>
+  function fmtINR(n){
+    return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(Math.round(n));
+  }
+
+  function fillExample(){
+    document.getElementById('billInr').value = 3000;
+    document.getElementById('tariff').value = 7;
+    document.getElementById('sunHours').value = 4.5;
+    runSolarCalc();
+  }
+
+  function runSolarCalc(){
+    const bill = Number(document.getElementById('billInr').value || 0);
+    const tariff = Number(document.getElementById('tariff').value || 0);
+    const sunHours = Number(document.getElementById('sunHours').value || 0);
+
+    if(bill <= 0 || tariff <= 0 || sunHours <= 0){
+      alert('Please enter valid values.');
+      return;
+    }
+
+    const unitsPerMonth = bill / tariff;
+
+    const performanceRatio = 0.75;
+    const kwRequired = unitsPerMonth / (30 * sunHours * performanceRatio);
+
+    const kwRounded = Math.max(0.5, Math.round(kwRequired * 2) / 2);
+
+    const genPerMonth = kwRounded * 30 * sunHours * performanceRatio;
+    const savings = Math.min(bill, genPerMonth * tariff);
+
+    document.getElementById('calcOut').style.display = 'block';
+    document.getElementById('outUnits').textContent = fmtINR(unitsPerMonth);
+    document.getElementById('outKw').textContent = kwRounded.toFixed(1);
+    document.getElementById('outSave').textContent = fmtINR(savings);
+  }
+</script>
 </body>
 </html>
